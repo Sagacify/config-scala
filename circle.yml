@@ -1,0 +1,17 @@
+machine:
+  environment:
+    COMPOSE_PROJECT_NAME: scala-utils
+
+dependencies:
+  override:
+    - wget https://raw.githubusercontent.com/Sagacify/ci-tools/master/run-sonar.sh
+    - chmod +x run-sonar.sh
+    - ./run-sonar.sh check
+    - ./run-sonar.sh install
+  cache_directories:
+    - "~/.ivy2"
+
+test:
+  override:
+    - TEST=True TEST_DEFAULT=True sbt test
+    - ./run-sonar.sh run
