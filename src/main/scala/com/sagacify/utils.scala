@@ -5,13 +5,13 @@ import scala.util.Properties
 object Utils {
 
   /** Gets paramter from environment or fails */
-  private def env(name: String): String = {
+  final def env(name: String): String = {
     Properties.envOrNone(name).getOrElse(
       throw new Exception(f"Environment not set : ${name}"))
   }
 
   /** Gets paramter from environment or use default */
-  private def env_get(name: String, default: String): String = {
+  final def envGet(name: String, default: String): String = {
     Properties.envOrElse(name, default)
   }
 
@@ -23,7 +23,7 @@ object Utils {
     vars.map{ variable =>
       variable match {
         case key: String => (key -> env(key))
-        case (key: String, default: String) => (key -> env_get(key, default))
+        case (key: String, default: String) => (key -> envGet(key, default))
         case e: Any => throw new Exception(f"Property not understood: ${e}")
       }
     }.toMap
