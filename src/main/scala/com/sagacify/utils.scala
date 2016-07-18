@@ -2,7 +2,7 @@ package com.sagacify
 
 import scala.util.Properties
 
-object Utils {
+object Config {
 
   /** Gets paramter from environment or fails */
   final def env(name: String): String = {
@@ -13,19 +13,5 @@ object Utils {
   /** Gets paramter from environment or use default */
   final def envGet(name: String, default: String): String = {
     Properties.envOrElse(name, default)
-  }
-
-  /** Transforms a list of strings/Tuple2(String, String) into a parameter map
-
-  i.e. : Seq("needed", ("optional", "default_value"))
-  */
-  final def getEnvironmentVariables(vars: Seq[Any]): Map[String, String] = {
-    vars.map{ variable =>
-      variable match {
-        case key: String => (key -> env(key))
-        case (key: String, default: String) => (key -> envGet(key, default))
-        case e: Any => throw new Exception(f"Property not understood: ${e}")
-      }
-    }.toMap
   }
 }

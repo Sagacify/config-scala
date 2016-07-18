@@ -8,10 +8,12 @@ dependencies:
     - chmod +x run-sonar.sh
     - ./run-sonar.sh check
     - ./run-sonar.sh install
+    - docker-compose run builder sbt update
   cache_directories:
     - "~/.ivy2"
+    - "~/.sbt"
 
 test:
   override:
-    - TEST=True TEST_DEFAULT=True sbt test
+    - docker-compose run builder sbt coverage test
     - ./run-sonar.sh run
