@@ -1,6 +1,8 @@
 machine:
-  environment:
-    COMPOSE_PROJECT_NAME: scala-utils
+  java:
+    version: openjdk8
+  services:
+    - docker
 
 dependencies:
   override:
