@@ -6,6 +6,18 @@ import scala.io.Source
 
 import scala.util.Properties
 
+import org.json4s.jackson.JsonMethods.parse
+import org.json4s.JBool
+import org.json4s.JDecimal
+import org.json4s.JDouble
+import org.json4s.JInt
+import org.json4s.JLong
+import org.json4s.JNull
+import org.json4s.JObject
+import org.json4s.JObject
+import org.json4s.JString
+import org.json4s.JValue
+
 object ConfigUtils {
 
   /** Gets parameter from environment or fails */
@@ -29,41 +41,56 @@ object ConfigUtils {
   }
 
 
-  final def load(path: String): Map[String, Option[String]] = {
+  final def load(path: String): Map[String, JValue] = {
     load(Source.fromFile(path, "UTF-8"))
   }
 
-  final def load(src: InputStream): Map[String, Option[String]] = {
+  final def load(src: InputStream): Map[String, JValue] = {
     load(Source.fromInputStream(src, "UTF-8"))
   }
 
-  final def load(src: Source): Map[String, Option[String]] = {
-    src.getLines.flatMap(loadLine).toMap
+  final def load(src: Source): Map[String, JValue] = {
+    parse(src.mkString) match {
+      case JObject(results) => results.toMap
+      case _ => throw new Error("Unparsable")
+    }
   }
 
-
-  final def loadInto(path: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
+  final def loadInto(path: String, config: Map[String, JValue]): Map[String, JValue] = {
     loadInto(Source.fromFile(path, "UTF-8"), path, config)
   }
 
-  final def loadInto(src: InputStream, srcName: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
+  final def loadInto(src: InputStream, srcName: String, config: Map[String, JValue]): Map[String, JValue] = {
     loadInto(Source.fromInputStream(src, "UTF-8"), srcName, config)
   }
 
-  final def loadInto(src: Source, srcName: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
+  final def loadInto(src: Source, srcName: String, config: Map[String, JValue]): Map[String, JValue] = {
     val child = load(src)
     val newChildKeys = child.keySet -- config.keySet
     if (newChildKeys.size == 1)
-      throw new Exception(s"Child config $srcName define a new key : ${newChildKeys.head}")
+      throw new Exception(s"Child config $srcName defines a new key : ${newChildKeys.head}")
     if (newChildKeys.size > 1)
-      throw new Exception(s"Child config $srcName define ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
-
+      throw new Exception(s"Child config $srcName defines ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
     (config ++ child)
   }
 
+  def unbox(key: String, value: JValue): Any = {
+    value match {
+      case JNull => env(key)
+      case JString(s) => envGet(key, s)
+      case JDouble(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
+      case JDecimal(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
+      case JInt(num) =>  envGet(key, None).map(_.toInt).getOrElse(num)
+      case JLong(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
+      case JBool(value) => envGet(key, None).map(_.toBoolean).getOrElse(value)
+      case _ =>  throw new Error(f"Unsuported value: $value")
+    }
+  }
 
-  final def loadEnv(config: Map[String, Option[String]]): Map[String, Option[String]] = {
-    config.keys.map(key => key -> envGet(key, config(key))).toMap
+  final def loadEnv(config: Map[String, JValue]): Map[String, Any] = {
+    config.map{ case (key, value) =>
+      (key -> unbox(key, value))
+    }
   }
 
 

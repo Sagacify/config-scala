@@ -6,7 +6,7 @@ builder:
     TEST: "true"
     RUN_ENV: test
     TEST_DEFAULT: "true"
-    opt3: from_env_3
+    opt3: 3
     opt4: from_env_4
     required2: 2
   ports:

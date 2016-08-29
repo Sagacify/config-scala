@@ -21,10 +21,10 @@ class UtilsSuite extends FunSuite {
 
   test("Config") {
     Config("required1")
-    assert(Config("opt1") == "111")
+    assert(Config("opt1") == 111)
     assert(Config("opt2") == "new2")
     assert(Config.i("required2") == 2)
-    assert(Config("opt3") == "from_env_3")
+    assert(Config("opt3") == 3)
     assert(Config("opt4") == "from_env_4")
   }
 }

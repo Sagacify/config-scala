@@ -4,12 +4,13 @@ organization := "com.sagacify"
 
 name := "scala-utils"
 
-version := "0.0.1"
+version := "0.0.2"
 
 scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-unchecked", "-feature", "-Ywarn-unused-import")
 
-libraryDependencies += "org.scalatest" % "scalatest_2.11" % "2.2.6" % "test"
-
-resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
+libraryDependencies ++= Seq(
+  "org.json4s"      %% "json4s-jackson" % "latest.integration",
+  "org.scalatest"   %% "scalatest"      % "latest.integration" % "test"
+)
