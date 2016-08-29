@@ -1,7 +1,5 @@
 package com.sagacify
 
-import java.io.InputStream
-
 import scala.io.Source
 
 import scala.util.Properties
@@ -45,10 +43,6 @@ object ConfigUtils {
     load(Source.fromFile(path, "UTF-8"))
   }
 
-  final def load(src: InputStream): Map[String, JValue] = {
-    load(Source.fromInputStream(src, "UTF-8"))
-  }
-
   final def load(src: Source): Map[String, JValue] = {
     parse(src.mkString) match {
       case JObject(results) => results.toMap
@@ -58,10 +52,6 @@ object ConfigUtils {
 
   final def loadInto(path: String, config: Map[String, JValue]): Map[String, JValue] = {
     loadInto(Source.fromFile(path, "UTF-8"), path, config)
-  }
-
-  final def loadInto(src: InputStream, srcName: String, config: Map[String, JValue]): Map[String, JValue] = {
-    loadInto(Source.fromInputStream(src, "UTF-8"), srcName, config)
   }
 
   final def loadInto(src: Source, srcName: String, config: Map[String, JValue]): Map[String, JValue] = {
@@ -90,21 +80,6 @@ object ConfigUtils {
   final def loadEnv(config: Map[String, JValue]): Map[String, Any] = {
     config.map{ case (key, value) =>
       (key -> unbox(key, value))
-    }
-  }
-
-
-  private final def loadLine(line: String): Option[(String, Option[String])] = {
-    val trimmed = line.trim
-    if (trimmed.length == 0 || trimmed(0) == '#') {
-          None
-    } else {
-      val index = trimmed.indexOf('=')
-      if (index < 0) {
-        Some(trimmed -> None)
-      } else {
-        Some(trimmed.substring(0, index).trim -> Some(trimmed.substring(index + 1).trim))
-      }
     }
   }
 }
