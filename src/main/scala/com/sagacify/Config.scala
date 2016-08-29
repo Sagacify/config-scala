@@ -17,7 +17,13 @@ object Config {
     val envCfg = loadEnv(versionCfg)
 
     // Check all set and done
-    envCfg.keys.map(key => key -> envCfg(key).getOrElse(throw new Exception(s"Mandatory variable not set : $key"))).toMap
+    val missing = envCfg.keys.filter(key => ! envCfg(key).isDefined).toSeq
+    if (missing.size == 1)
+      throw new Exception(s"Mandatory variable not set : ${missing.head}")
+    if (missing.size > 1)
+      throw new Exception(s"${missing.size} mandatories variables not set : {${missing.mkString(", ")}}")
+
+    envCfg.keys.map(key => key -> envCfg(key).get).toMap
   }
 
   def s(name: String): String = cfg.getOrElse(name, throw new NoSuchElementException(s"Paramaters doesn't exists : $name"))

@@ -52,6 +52,12 @@ object ConfigUtils {
 
   final def loadInto(src: Source, config: Map[String, Option[String]]): Map[String, Option[String]] = {
     val child = load(src)
+    val newChildKeys = child.keySet -- config.keySet
+    if (newChildKeys.size == 1)
+      throw new Exception(s"Child config $src define a new key : ${newChildKeys.head}")
+    if (newChildKeys.size > 1)
+      throw new Exception(s"Child config $src define ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
+
     (config.keys ++ child.keys).map(key => key -> child.get(key).getOrElse(config(key))).toMap
   }
 
