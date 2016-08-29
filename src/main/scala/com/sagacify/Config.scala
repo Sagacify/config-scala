@@ -25,6 +25,4 @@ object Config {
   def i(name: String): Int = cfg.getOrElse(name, throw new NoSuchElementException(s"Paramaters doesn't exists : $name")).toInt
 
   def apply(name: String): String = s(name)
-
-  private def throwException(e: Exception): String = throw e
 }
