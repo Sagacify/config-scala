@@ -58,7 +58,7 @@ object ConfigUtils {
     if (newChildKeys.size > 1)
       throw new Exception(s"Child config $srcName define ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
 
-    (config.keys ++ child.keys).map(key => key -> child.get(key).getOrElse(config(key))).toMap
+    (config ++ child)
   }
 
 
