@@ -1,6 +1,4 @@
 machine:
-  java:
-    version: openjdk8
   services:
     - docker
 
@@ -17,5 +15,5 @@ dependencies:
 
 test:
   override:
-    - docker-compose run builder sbt coverage test
+    - docker-compose run builder sbt coverage test coverageReport
     - ./run-sonar.sh run
