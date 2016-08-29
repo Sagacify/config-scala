@@ -2,8 +2,8 @@ package com.sagacify
 
 import org.scalatest.FunSuite
 
-import Config.envGet
-import Config.env
+import ConfigUtils.envGet
+import ConfigUtils.env
 
 class UtilsSuite extends FunSuite {
 
@@ -17,5 +17,14 @@ class UtilsSuite extends FunSuite {
     intercept[Exception] {
       env("SHOULD_FAIL")
     }
+  }
+
+  test("Config") {
+    Config("required1")
+    assert(Config("opt1") == "111")
+    assert(Config("opt2") == "new2")
+    assert(Config.i("required2") == 2)
+    assert(Config("opt3") == "from_env_3")
+    assert(Config("opt4") == "from_env_4")
   }
 }

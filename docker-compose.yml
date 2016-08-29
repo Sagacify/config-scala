@@ -4,7 +4,11 @@ builder:
   environment:
     APP_PORT: 8081
     TEST: "true"
+    RUN_ENV: test
     TEST_DEFAULT: "true"
+    opt3: from_env_3
+    opt4: from_env_4
+    required2: 2
   ports:
     - "18081:8081"
   volumes:
@@ -13,3 +17,4 @@ builder:
     - ./project:/app/project
     - ./build.sbt:/app/build.sbt
     - ./target:/app/target
+    - ./config:/app/config
