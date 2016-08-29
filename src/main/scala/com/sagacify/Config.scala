@@ -19,9 +19,9 @@ object Config {
     // Check all set and done
     val missing = envCfg.keys.filter(key => ! envCfg(key).isDefined).toSeq
     if (missing.size == 1)
-      throw new Exception(s"Mandatory variable not set : ${missing.head}")
+      throw new NoSuchElementException(s"Mandatory variable not set : ${missing.head}")
     if (missing.size > 1)
-      throw new Exception(s"${missing.size} mandatories variables not set : {${missing.mkString(", ")}}")
+      throw new NoSuchElementException(s"${missing.size} mandatories variables not set : {${missing.mkString(", ")}}")
 
     envCfg.keys.map(key => key -> envCfg(key).get).toMap
   }

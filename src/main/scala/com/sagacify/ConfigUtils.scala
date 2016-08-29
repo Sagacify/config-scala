@@ -43,20 +43,20 @@ object ConfigUtils {
 
 
   final def loadInto(path: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
-    loadInto(Source.fromFile(path, "UTF-8"), config)
+    loadInto(Source.fromFile(path, "UTF-8"), path, config)
   }
 
-  final def loadInto(src: InputStream, config: Map[String, Option[String]]): Map[String, Option[String]] = {
-    loadInto(Source.fromInputStream(src, "UTF-8"), config)
+  final def loadInto(src: InputStream, srcName: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
+    loadInto(Source.fromInputStream(src, "UTF-8"), srcName, config)
   }
 
-  final def loadInto(src: Source, config: Map[String, Option[String]]): Map[String, Option[String]] = {
+  final def loadInto(src: Source, srcName: String, config: Map[String, Option[String]]): Map[String, Option[String]] = {
     val child = load(src)
     val newChildKeys = child.keySet -- config.keySet
     if (newChildKeys.size == 1)
-      throw new Exception(s"Child config $src define a new key : ${newChildKeys.head}")
+      throw new Exception(s"Child config $srcName define a new key : ${newChildKeys.head}")
     if (newChildKeys.size > 1)
-      throw new Exception(s"Child config $src define ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
+      throw new Exception(s"Child config $srcName define ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
 
     (config.keys ++ child.keys).map(key => key -> child.get(key).getOrElse(config(key))).toMap
   }
