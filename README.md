@@ -1,20 +1,31 @@
-# Scala-Utils
+# Config-scala
 
-Swiss army knife for all sagacify scala projects.
-One rule, no dependencies.
+Config library for scala
+To help with cross-project readability, this package enables the creation of a default and run_env specific configurations.
+Look into the config folder for examples.
 
-# build
+To create a default config, add a default.json file in the config folder of your project.
+If a value is set to null, the Config expects a run_env config or an environment variable to override it. (If not it will throw an exception.)
 
-to test:
+If a default value is superseeded by an run_env config or an environment variable, the Config object will ensure that it has the same type as the value it overrides. String -> String, Int -> Int etc
+
+If the default value is null, any type is accepted.
+
+# Testing
 ```
-TEST=True TEST_DEFAULT=True sbt test
-```
-*NOTE:* The environment variables are part of the test and it will fail if they are not set to these values.
-
-to build:
-```
-sbt package
+docker-compose run builder
 ```
 
-to run:
-This is a library THUH!!!
+# Packaging
+```
+docker-compose run builder sbt package
+```
+
+# Include into your project.
+Add the following to your build.sbt
+
+```
+lazy val config = ProjectRef(uri("git://github.com/Sagacify/config-scala.git#v0.0.2"), "config-scala")
+```
+
+And make your project depend on it.

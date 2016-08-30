@@ -1,0 +1,19 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - wget https://raw.githubusercontent.com/Sagacify/ci-tools/master/run-sonar.sh
+    - chmod +x run-sonar.sh
+    - ./run-sonar.sh check
+    - ./run-sonar.sh install
+    - docker-compose run builder sbt update
+  cache_directories:
+    - "~/.ivy2"
+    - "~/.sbt"
+
+test:
+  override:
+    - docker-compose run builder sbt coverage test coverageReport
+    - ./run-sonar.sh run
