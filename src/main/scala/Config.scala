@@ -10,10 +10,17 @@ object Config {
     // Default config
     val defCfg = load("./config/default.json")
 
-    // Specific config
-    val versionCfg = envGet("RUN_ENV")
-      .map(env => merge(f"./config/$env.json".toLowerCase, defCfg))
-      .getOrElse(defCfg)
+    // Run env specific config
+    val runCfg: Map[String, JValue] = envGet("RUN_ENV")
+      .flatMap{ env =>
+        val file = Paths.get("./config", f"$env.json".toLowerCase).toFile
+        if (file.isFile) {
+          Some(merge(Source.fromFile(file, encoding), file.toString, defCfg))
+        } else {
+          System.err.println(f"WARN: No config found for RUN_ENV=$env")
+          None
+        }
+      }.getOrElse(defCfg)
 
     // Environement variable
     val envCfg = loadEnv(versionCfg)
