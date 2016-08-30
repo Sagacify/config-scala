@@ -29,15 +29,9 @@ object ConfigUtils {
     Properties.envOrElse(name, default)
   }
 
-  /** Gets paramter from environment or use default */
-  final def envGet(name: String, orElse: Option[String]): Option[String] = {
-    envGet(name).orElse(orElse)
-  }
-
   final def envGet(name: String): Option[String] = {
     Properties.envOrNone(name)
   }
-
 
   final def load(path: String): Map[String, JValue] = {
     load(Source.fromFile(path, "UTF-8"))
@@ -50,29 +44,37 @@ object ConfigUtils {
     }
   }
 
-  final def loadInto(path: String, config: Map[String, JValue]): Map[String, JValue] = {
-    loadInto(Source.fromFile(path, "UTF-8"), path, config)
+  final def merge(
+      path: String,
+      config: Map[String, JValue]): Map[String, JValue] = {
+    merge(Source.fromFile(path, "UTF-8"), path, config)
   }
 
-  final def loadInto(src: Source, srcName: String, config: Map[String, JValue]): Map[String, JValue] = {
+  final def merge(
+      src: Source,
+      srcName: String,
+      config: Map[String, JValue]): Map[String, JValue] = {
     val child = load(src)
     val newChildKeys = child.keySet -- config.keySet
     if (newChildKeys.size == 1)
-      throw new Exception(s"Child config $srcName defines a new key : ${newChildKeys.head}")
+      throw new Exception(
+        s"Child config $srcName defines a new key : ${newChildKeys.head}")
     if (newChildKeys.size > 1)
-      throw new Exception(s"Child config $srcName defines ${newChildKeys.size} new keys : {${newChildKeys.mkString(", ")}}")
+      throw new Exception(
+        s"""Child config $srcName defines ${newChildKeys.size} new keys :
+            |{${newChildKeys.mkString(", ")}}""".stripMargin)
     (config ++ child)
   }
 
-  def unbox(key: String, value: JValue): Any = {
+  private final def unbox(key: String, value: JValue): Any = {
     value match {
       case JNull => env(key)
       case JString(s) => envGet(key, s)
-      case JDouble(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
-      case JDecimal(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
-      case JInt(num) =>  envGet(key, None).map(_.toInt).getOrElse(num)
-      case JLong(num) =>  envGet(key, None).map(_.toDouble).getOrElse(num)
-      case JBool(value) => envGet(key, None).map(_.toBoolean).getOrElse(value)
+      case JDouble(num) =>  envGet(key).map(_.toDouble).getOrElse(num)
+      case JDecimal(num) =>  envGet(key).map(_.toDouble).getOrElse(num)
+      case JInt(num) =>  envGet(key).map(_.toInt).getOrElse(num)
+      case JLong(num) =>  envGet(key).map(_.toDouble).getOrElse(num)
+      case JBool(value) => envGet(key).map(_.toBoolean).getOrElse(value)
       case _ =>  throw new Error(f"Unsuported value: $value")
     }
   }

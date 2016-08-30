@@ -2,7 +2,7 @@ package com.sagacify
 
 import ConfigUtils.load
 import ConfigUtils.envGet
-import ConfigUtils.loadInto
+import ConfigUtils.merge
 import ConfigUtils.loadEnv
 
 object Config {
@@ -12,7 +12,7 @@ object Config {
 
     // Specific config
     val versionCfg = envGet("RUN_ENV")
-      .map(env => loadInto(f"./config/$env.json".toLowerCase, defCfg))
+      .map(env => merge(f"./config/$env.json".toLowerCase, defCfg))
       .getOrElse(defCfg)
 
     // Environement variable
@@ -46,7 +46,8 @@ object Config {
   }
 
   def i(name: String): Int = cfg.get(name) match {
-    case None => throw new NoSuchElementException(s"Paramater doesn't exists : $name")
+    case None =>
+      throw new NoSuchElementException(s"Paramater doesn't exists : $name")
     case Some(s: Int) => s
     case Some(s: String) => s.toInt
     case Some(s: Any) => throw new Exception(f"Parameter is not an Int: $name")
