@@ -2,8 +2,8 @@ package com.sagacify
 
 import org.scalatest.FunSuite
 
-import ConfigUtils.envGet
-import ConfigUtils.env
+import Config.envGet
+import Config.env
 
 class UtilsSuite extends FunSuite {
 
